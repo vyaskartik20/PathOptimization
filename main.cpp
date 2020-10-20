@@ -5,8 +5,25 @@ int heuristicValueCalculator (vector <vector <char> > &path, int payToll, int fu
 {
     int heuristicValue;
 
-    heuristicValue
+    heuristicValue = (x+y);
+    if(path[x][y]!='T')
+    {
+        heuristicValue=heuristicValue-(payToll/3);
+    }
 
+    heuristicValue=heuristicValue*fuelLeft;
+
+    if(fuelLeft<=0)
+    {
+        heuristicValue=INT_MIN;
+    }
+
+    if(path[x][y]=='H')
+    {
+        heuristicValue=INT_MIN;
+    }
+
+    return heuristicValue;
 }
 
 vector <pair <int,int> > nextUtilFunction (vector <vector <char> > &path, int rows, int columns, int currRow, int currCol)
@@ -19,7 +36,7 @@ vector <pair <int,int> > nextUtilFunction (vector <vector <char> > &path, int ro
             nextPossibileMoves.push_back({(currRow),(currCol+1)});
             nextPossibileMoves.push_back({(currRow+1),(currCol)});
         }
-        else if(currCol==columns)
+        else if(currCol==(columns-1))
         {
             nextPossibileMoves.push_back({(currRow),(currCol-1)});
             nextPossibileMoves.push_back({(currRow+1),(currCol)});
@@ -31,14 +48,14 @@ vector <pair <int,int> > nextUtilFunction (vector <vector <char> > &path, int ro
             nextPossibileMoves.push_back({(currRow+1),(currCol)});
         }
     }
-    else if(currRow==rows)
+    else if(currRow==(rows-1))
     {
         if(currCol==0)
         {
             nextPossibileMoves.push_back({(currRow),(currCol+1)});
             nextPossibileMoves.push_back({(currRow-1),(currCol)});
         }
-        else if(currCol==columns)
+        else if(currCol==(columns-1))
         {
             nextPossibileMoves.push_back({(currRow),(currCol-1)});
             nextPossibileMoves.push_back({(currRow-1),(currCol)});
@@ -56,7 +73,7 @@ vector <pair <int,int> > nextUtilFunction (vector <vector <char> > &path, int ro
         nextPossibileMoves.push_back({(currRow-1),(currCol)});
         nextPossibileMoves.push_back({(currRow),(currCol+1)});
     }
-    else if(currCol==columns)
+    else if(currCol==(columns-1))
     {
         nextPossibileMoves.push_back({(currRow+1),(currCol)});
         nextPossibileMoves.push_back({(currRow-1),(currCol)});
@@ -114,7 +131,7 @@ int main()
 
         cout <<"Enter the fuel capacity of the vehicle\n";
         cin >> fuelCapacity;
-        cout <<"Enter the cost of one traversal \, that is the units of fuel that would burn to "
+        cout <<"Enter the cost of one traversal, that is the units of fuel that would burn to "
             <<"accomplish that one unit of fuel cost one amount of money\n";
         cin >> payTravel;
         cout << "Enter the units of amount needed to be paid on one toll tax station\n";
@@ -165,12 +182,15 @@ int main()
             columns=5;
 
             path.resize(rows);
+            visitedUtil.resize(rows);
             for (int i=0; i<rows; i++)
             {
                 path[i].resize(columns);
+                visitedUtil[i].resize(columns);
                 for(int j=0;j<columns;j++)
                 {
                     path[i][j]='O';
+                    visitedUtil[i][j]=0;
                 }
             }
 
@@ -212,26 +232,42 @@ int main()
     cout << "The units of amount needed to be paid on one toll tax station is : " <<payToll <<"\n\n";
 
     vector <pair<int,int>> tempPath;
-    tempPath.push_back({1,1});
+    tempPath.push_back({0,0});
+
+    // cout <<"hari om 1\n";
 
     priority_queue< pair < int, pair < pair< pair< int,int >, int>, vector <pair <int,int> > > > > QUEUE;
+    // cout <<"hari om 1\n";
     heuristicValue=heuristicValueCalculator(path,fuelCapacity,payToll, 0,0);
+    // cout <<"hari om 1\n";
     visitedUtil[0][0]=fuelCapacity;
-    QUEUE.push(make_pair(0, make_pair( make_pair( make_pair(0,0) ,heuristicValue) , tempPath )));
+    // cout <<"hari om 1\n";
+    QUEUE.push(make_pair(0, make_pair( make_pair( make_pair(0,0) ,fuelCapacity) , tempPath )));
 
     vector <pair <int,int> > ans;
 
+    // cout <<"hari om 2\n";
+
     while(!QUEUE.empty())
     {
+        // cout <<"hari om 3\n";
+
         pair < int, pair < pair< pair< int,int > ,int >, vector <pair <int,int> > > > curr = QUEUE.top();
         QUEUE.pop();
         tempPath=curr.second.second;
 
-        if( (curr.second.first.first.first ==rows) && (curr.second.first.first.second == columns) )
+        // cout <<curr.second.first.first.first <<"      " <<curr.second.first.first.second <<endl;
+
+        if( ( curr.second.first.first.first ==(rows-1) ) && ( curr.second.first.first.second == (columns-1) ) )
         {
             ans=curr.second.second;
             break;
         } 
+
+        // if(curr.first==INT_MIN)
+        // {
+        //     break;
+        // }
 
         vector <pair <int,int> >nextPossibileMoves = nextUtilFunction(path, rows,columns,curr.second.first.first.first, curr.second.first.first.second);
 
@@ -240,30 +276,59 @@ int main()
             pair <int,int> coordsNext = nextPossibileMoves[i];
             fuelLeft=(curr.second.first.second-1);
 
-            if( path[curr.second.first.first.first][curr.second.first.first.first] =='P' || 
-                     fuelLeft> visitedUtil[curr.second.first.first.first][curr.second.first.first.second])
+            // cout <<"njkd        " <<curr.second.first.first.first <<"        " <<curr.second.first.first.second   <<"            "
+            //  <<coordsNext.first <<"         " <<coordsNext.second <<"        " <<fuelLeft <<"       ";
+
+            //  path[curr.second.first.first.first][curr.second.first.first.first] =='P' || 
+
+            if(fuelLeft>= visitedUtil[coordsNext.first][coordsNext.second])
             {
-                if(path[curr.second.first.first.first][curr.second.first.first.first] =='P')
+                // cout <<"yes\n";
+                if(path[coordsNext.first][coordsNext.second] =='P')
                 {
                     fuelLeft=fuelCapacity;
                 }
-                visitedUtil[curr.second.first.first.first][curr.second.first.first.second]=fuelLeft;
+                visitedUtil[coordsNext.first][coordsNext.second]=fuelLeft;
                 heuristicValue=heuristicValueCalculator(path,fuelLeft,payToll, coordsNext.first, coordsNext.second);
                 
+                // cout <<heuristicValue ;
                 tempPath.push_back(coordsNext);
 
                 QUEUE.push(make_pair(heuristicValue, make_pair( make_pair( make_pair(coordsNext.first,coordsNext.second)
                                  ,fuelLeft) , tempPath )));
             
+
                 tempPath.pop_back();
             }
             else
             {
+                // cout <<endl;
                 continue;
             }
+            // cout <<endl;
+
 
         }
+        // cout <<endl;
+
+
 
     }
+
+    cout <<endl <<endl <<endl;
+
+    if(ans.empty())
+    {
+        cout  <<"No path exists to reach the end point \n\n";
+    }
+    else
+    {
+        cout <<"The most optimzed path is : \n";
+        for(int i=0;i<ans.size();i++)
+        {
+            cout <<ans[i].first <<"     " <<ans[i].second <<endl;
+        }
+    }
+
 }
     
