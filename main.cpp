@@ -1,6 +1,70 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+vector <pair <int,int> > nextPossibileMoves (vector <vector <char> > &path, int rows, int columns, int currRow, int currCol)
+{
+    vector < pair <int,int> > nextPossibileMoves;
+    if(currRow==0)
+    {
+        if(currCol==0)
+        {
+            nextPossibileMoves.push_back({(currRow),(currCol+1)});
+            nextPossibileMoves.push_back({(currRow+1),(currCol)});
+        }
+        else if(currCol==columns)
+        {
+            nextPossibileMoves.push_back({(currRow),(currCol-1)});
+            nextPossibileMoves.push_back({(currRow+1),(currCol)});
+        }
+        else
+        {
+            nextPossibileMoves.push_back({(currRow),(currCol-1)});
+            nextPossibileMoves.push_back({(currRow),(currCol+1)});
+            nextPossibileMoves.push_back({(currRow+1),(currCol)});
+        }
+    }
+    else if(currRow==rows)
+    {
+        if(currCol==0)
+        {
+            nextPossibileMoves.push_back({(currRow),(currCol+1)});
+            nextPossibileMoves.push_back({(currRow-1),(currCol)});
+        }
+        else if(currCol==columns)
+        {
+            nextPossibileMoves.push_back({(currRow),(currCol-1)});
+            nextPossibileMoves.push_back({(currRow-1),(currCol)});
+        }
+        else
+        {
+            nextPossibileMoves.push_back({(currRow),(currCol-1)});
+            nextPossibileMoves.push_back({(currRow),(currCol+1)});
+            nextPossibileMoves.push_back({(currRow-1),(currCol)});
+        }
+    }
+    else if(currCol==0)
+    {
+        nextPossibileMoves.push_back({(currRow+1),(currCol)});
+        nextPossibileMoves.push_back({(currRow-1),(currCol)});
+        nextPossibileMoves.push_back({(currRow),(currCol+1)});
+    }
+    else if(currCol==columns)
+    {
+        nextPossibileMoves.push_back({(currRow+1),(currCol)});
+        nextPossibileMoves.push_back({(currRow-1),(currCol)});
+        nextPossibileMoves.push_back({(currRow),(currCol-1)});
+    }
+    else
+    {
+        nextPossibileMoves.push_back({(currRow+1),(currCol)});
+        nextPossibileMoves.push_back({(currRow-1),(currCol)});
+        nextPossibileMoves.push_back({(currRow),(currCol-1)});
+        nextPossibileMoves.push_back({(currRow),(currCol+1)});
+    }
+    return nextPossibileMoves;
+}
+
+
 int main()
 {
     cout <<"***********************\n" <<"!! Welcome !!\n"   <<"\n***********************\n";
@@ -136,12 +200,25 @@ int main()
     vector <pair<int,int>> path;
     path.push_back({1,1});
 
-    priority_queue< pair < int, pair < pair< int,int > , vector <int> > > > QUEUE;
+    priority_queue< pair < int, pair < pair< int,int > , vector <pair <int,int> > > > > QUEUE;
 
     QUEUE.push(make_pair(0, make_pair( make_pair(1,1) , path )));
 
-    pair < int, pair < pair< int,int > , vector <int> > > curr = QUEUE.top();
-    QUEUE.pop();
+    vector <pair <int,int> > ans;
 
+    while(!QUEUE.empty())
+    {
+        pair < int, pair < pair< int,int > , vector <int> > > curr = QUEUE.top();
+        QUEUE.pop();
+
+        if( (curr.second.first.first ==rows) && (curr.second.first.second == columns) )
+        {
+            ans=curr.second.second;
+            break;
+        } 
+
+        vector <pair <int,int> >nextPossibileMoves = nextUtilFunction(path, rows,columns, curr.second.first.second);
+
+    }
 }
     
