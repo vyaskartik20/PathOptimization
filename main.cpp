@@ -1,7 +1,15 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-vector <pair <int,int> > nextPossibileMoves (vector <vector <char> > &path, int rows, int columns, int currRow, int currCol)
+int heuristicValueCalculator (vector <vector <char> > &path, int payToll, int fuelLeft, int x, int y)
+{
+    int heuristicValue;
+
+    heuristicValue
+
+}
+
+vector <pair <int,int> > nextUtilFunction (vector <vector <char> > &path, int rows, int columns, int currRow, int currCol)
 {
     vector < pair <int,int> > nextPossibileMoves;
     if(currRow==0)
@@ -75,7 +83,10 @@ int main()
     int c_int;
     int numPumps,numHoles,numTolls;
     int payToll, payTravel;
+    int heuristicValue;
+    int fuelLeft;
     vector <vector <char> > path;
+    vector <vector <int> > visitedUtil;
 
     cout <<"Would you like to create a new maze [Y] or use the default one [N]?";
     cin >>c_char;
@@ -89,12 +100,15 @@ int main()
         cin >>columns;
 
         path.resize(rows);
+        visitedUtil.resize(rows);
         for (int i=0; i<rows; i++)
         {
             path[i].resize(columns);
+            visitedUtil[i].resize(columns);
             for(int j=0;j<columns;j++)
             {
                 path[i][j]='O';
+                visitedUtil[i][j]=0;
             }
         }
 
@@ -197,27 +211,58 @@ int main()
     cout <<"The cost of one traversal is : " <<payTravel <<"\n";
     cout << "The units of amount needed to be paid on one toll tax station is : " <<payToll <<"\n\n";
 
-    vector <pair<int,int>> path;
-    path.push_back({1,1});
+    vector <pair<int,int>> tempPath;
+    tempPath.push_back({1,1});
 
-    priority_queue< pair < int, pair < pair< int,int > , vector <pair <int,int> > > > > QUEUE;
-
-    QUEUE.push(make_pair(0, make_pair( make_pair(1,1) , path )));
+    priority_queue< pair < int, pair < pair< pair< int,int >, int>, vector <pair <int,int> > > > > QUEUE;
+    heuristicValue=heuristicValueCalculator(path,fuelCapacity,payToll, 0,0);
+    visitedUtil[0][0]=fuelCapacity;
+    QUEUE.push(make_pair(0, make_pair( make_pair( make_pair(0,0) ,heuristicValue) , tempPath )));
 
     vector <pair <int,int> > ans;
 
     while(!QUEUE.empty())
     {
-        pair < int, pair < pair< int,int > , vector <int> > > curr = QUEUE.top();
+        pair < int, pair < pair< pair< int,int > ,int >, vector <pair <int,int> > > > curr = QUEUE.top();
         QUEUE.pop();
+        tempPath=curr.second.second;
 
-        if( (curr.second.first.first ==rows) && (curr.second.first.second == columns) )
+        if( (curr.second.first.first.first ==rows) && (curr.second.first.first.second == columns) )
         {
             ans=curr.second.second;
             break;
         } 
 
-        vector <pair <int,int> >nextPossibileMoves = nextUtilFunction(path, rows,columns, curr.second.first.second);
+        vector <pair <int,int> >nextPossibileMoves = nextUtilFunction(path, rows,columns,curr.second.first.first.first, curr.second.first.first.second);
+
+        for(int i=0;i<nextPossibileMoves.size();i++)
+        {
+            pair <int,int> coordsNext = nextPossibileMoves[i];
+            fuelLeft=(curr.second.first.second-1);
+
+            if( path[curr.second.first.first.first][curr.second.first.first.first] =='P' || 
+                     fuelLeft> visitedUtil[curr.second.first.first.first][curr.second.first.first.second])
+            {
+                if(path[curr.second.first.first.first][curr.second.first.first.first] =='P')
+                {
+                    fuelLeft=fuelCapacity;
+                }
+                visitedUtil[curr.second.first.first.first][curr.second.first.first.second]=fuelLeft;
+                heuristicValue=heuristicValueCalculator(path,fuelLeft,payToll, coordsNext.first, coordsNext.second);
+                
+                tempPath.push_back(coordsNext);
+
+                QUEUE.push(make_pair(heuristicValue, make_pair( make_pair( make_pair(coordsNext.first,coordsNext.second)
+                                 ,fuelLeft) , tempPath )));
+            
+                tempPath.pop_back();
+            }
+            else
+            {
+                continue;
+            }
+
+        }
 
     }
 }
