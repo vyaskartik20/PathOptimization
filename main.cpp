@@ -1,26 +1,30 @@
 #include <bits/stdc++.h>
 using namespace std;
+typedef pair < int, pair < pair< pair< int,int >, int>, vector <pair <int,int> > > > queueElement;
 
-int heuristicValueCalculator (vector <vector <char> > &path, int payToll, int fuelLeft, int x, int y)
+int heuristicValueCalculator (vector <vector <char> > &path,int fuelLeft,int fuelCapacity, int payToll, int payTravel, int x, int y,int rows, int columns)
 {
     int heuristicValue;
 
-    heuristicValue = (x+y);
-    if(path[x][y]!='T')
+    heuristicValue = rows+columns;
+    heuristicValue= heuristicValue - (x+y)-2
+    ;
+    if(path[x][y]=='T')
     {
-        heuristicValue=heuristicValue-(payToll/3);
+        heuristicValue=heuristicValue+(payToll/3);
     }
 
-    heuristicValue=heuristicValue*fuelLeft;
+
+    heuristicValue=heuristicValue - fuelLeft;
 
     if(fuelLeft<=0)
     {
-        heuristicValue=INT_MIN;
+        heuristicValue=INT_MAX;
     }
 
     if(path[x][y]=='H')
     {
-        heuristicValue=INT_MIN;
+        heuristicValue=INT_MAX;
     }
 
     return heuristicValue;
@@ -214,6 +218,59 @@ int main()
             numTolls=1;
             numPumps=5;
         }
+
+        else if (c_int == 2)
+        {
+            // H T O P
+
+            // P O O O O O
+            // P O O O O O
+            // P O P T P O
+            // P O O O O O
+            // P O O H O O
+            // P O P T O O
+
+            rows=6;
+            columns=6;
+
+            path.resize(rows);
+            visitedUtil.resize(rows);
+            for (int i=0; i<rows; i++)
+            {
+                path[i].resize(columns);
+                visitedUtil[i].resize(columns);
+                for(int j=0;j<columns;j++)
+                {
+                    path[i][j]='O';
+                    visitedUtil[i][j]=0;
+                }
+            }
+
+            path[0][0]='P';
+            path[1][0]='P';
+            path[2][0]='P';
+            path[3][0]='P';
+            path[4][0]='P';
+            path[5][0]='P';
+            path[2][2]='P';
+            path[1][5]='P';
+            path[2][4]='P';
+
+            path[4][3]='H';
+
+            path[5][3]='T';
+            path[2][3]='T';
+
+            fuelCapacity=4;
+            payToll=10;
+            payTravel=1;
+
+            numHoles=1;
+            numTolls=2;
+            numPumps=9;
+        
+        }
+
     } 
 
     cout <<"The path is : \n";
@@ -235,10 +292,11 @@ int main()
     tempPath.push_back({0,0});
 
     // cout <<"hari om 1\n";
-
-    priority_queue< pair < int, pair < pair< pair< int,int >, int>, vector <pair <int,int> > > > > QUEUE;
+     
+    priority_queue<queueElement, vector<queueElement>, greater<queueElement> > QUEUE;
+    // priority_queue< pair < int, pair < pair< pair< int,int >, int>, vector <pair <int,int> > > > > QUEUE;
     // cout <<"hari om 1\n";
-    heuristicValue=heuristicValueCalculator(path,fuelCapacity,payToll, 0,0);
+    heuristicValue=heuristicValueCalculator(path,fuelCapacity,fuelCapacity,payToll,payTravel, 0,0,rows,columns);
     // cout <<"hari om 1\n";
     visitedUtil[0][0]=fuelCapacity;
     // cout <<"hari om 1\n";
@@ -258,11 +316,12 @@ int main()
 
         // cout <<curr.second.first.first.first <<"      " <<curr.second.first.first.second <<endl;
 
-        if( ( curr.second.first.first.first ==(rows-1) ) && ( curr.second.first.first.second == (columns-1) ) )
-        {
-            ans=curr.second.second;
-            break;
-        } 
+        // if( ( curr.second.first.first.first ==(rows-1) ) && ( curr.second.first.first.second == (columns-1) ) )
+        // {
+        //     // cout <<"yesyesyseyseyesyesyseyseyesyesyseyseyesyesyseyseyesyesyseyseyesyesyseyse";
+        //     ans=curr.second.second;
+        //     break;
+        // } 
 
         // if(curr.first==INT_MIN)
         // {
@@ -276,21 +335,30 @@ int main()
             pair <int,int> coordsNext = nextPossibileMoves[i];
             fuelLeft=(curr.second.first.second-1);
 
+            if(path[coordsNext.first][coordsNext.second] =='P')
+            {
+                fuelLeft=fuelCapacity;
+            }
+
             // cout <<"njkd        " <<curr.second.first.first.first <<"        " <<curr.second.first.first.second   <<"            "
             //  <<coordsNext.first <<"         " <<coordsNext.second <<"        " <<fuelLeft <<"       ";
 
             //  path[curr.second.first.first.first][curr.second.first.first.first] =='P' || 
+            
+            if( ( coordsNext.first ==(rows-1) ) && ( coordsNext.second == (columns-1) ) )
+            {
+                // cout <<"yesyesyseyseyesyesyseyseyesyesyseyseyesyesyseyseyesyesyseyseyesyesyseyse";
+                ans=curr.second.second;
+                ans.push_back({(rows-1),(columns-1)});
+                break;
+            } 
 
-            if(fuelLeft>= visitedUtil[coordsNext.first][coordsNext.second])
+            if(fuelLeft> visitedUtil[coordsNext.first][coordsNext.second])
             {
                 // cout <<"yes\n";
-                if(path[coordsNext.first][coordsNext.second] =='P')
-                {
-                    fuelLeft=fuelCapacity;
-                }
                 visitedUtil[coordsNext.first][coordsNext.second]=fuelLeft;
-                heuristicValue=heuristicValueCalculator(path,fuelLeft,payToll, coordsNext.first, coordsNext.second);
-                
+                heuristicValue=heuristicValueCalculator(path,fuelLeft,fuelCapacity,payToll, payTravel, coordsNext.first, coordsNext.second,rows,columns);
+                // heuristicValue=heuristicValue;
                 // cout <<heuristicValue ;
                 tempPath.push_back(coordsNext);
 
