@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-typedef pair < int, pair < pair< pair< int,int >, int>, vector <pair <int,int> > > > queueElement;
+typedef pair < int, pair < pair< pair< int,int >, pair <int , pair<int,int> > >, vector <pair <int,int> > > > queueElement;
 
 int heuristicValueCalculator (vector <vector <char> > &path,int fuelLeft,int fuelCapacity, int payToll, int payTravel, int x, int y,int rows, int columns)
 {
@@ -300,7 +300,7 @@ int main()
     // cout <<"hari om 1\n";
     visitedUtil[0][0]=fuelCapacity;
     // cout <<"hari om 1\n";
-    QUEUE.push(make_pair(0, make_pair( make_pair( make_pair(0,0) ,fuelCapacity) , tempPath )));
+    QUEUE.push(make_pair(0, make_pair( make_pair( make_pair(0,0) ,make_pair(fuelCapacity, make_pair(0,0) ) ) , tempPath )));
 
     vector <pair <int,int> > ans;
 
@@ -310,11 +310,18 @@ int main()
     {
         // cout <<"hari om 3\n";
 
-        pair < int, pair < pair< pair< int,int > ,int >, vector <pair <int,int> > > > curr = QUEUE.top();
+        pair < int, pair < pair< pair< int,int > ,pair< int, pair <int,int> > >, vector <pair <int,int> > > > curr = QUEUE.top();
         QUEUE.pop();
         tempPath=curr.second.second;
 
+        int costBase=curr.second.first.second.second.second;
+
         // cout <<curr.second.first.first.first <<"      " <<curr.second.first.first.second <<endl;
+
+        // for(int i=0;i<curr.second.second.size();i++)
+        // {
+        //     cout <<curr.second.second[i].first <<"        " <<curr.second.second[i].second <<endl;
+        // }
 
         // if( ( curr.second.first.first.first ==(rows-1) ) && ( curr.second.first.first.second == (columns-1) ) )
         // {
@@ -333,15 +340,14 @@ int main()
         for(int i=0;i<nextPossibileMoves.size();i++)
         {
             pair <int,int> coordsNext = nextPossibileMoves[i];
-            fuelLeft=(curr.second.first.second-1);
+            fuelLeft=(curr.second.first.second.first-1);
 
             if(path[coordsNext.first][coordsNext.second] =='P')
             {
                 fuelLeft=fuelCapacity;
             }
 
-            // cout <<"njkd        " <<curr.second.first.first.first <<"        " <<curr.second.first.first.second   <<"            "
-            //  <<coordsNext.first <<"         " <<coordsNext.second <<"        " <<fuelLeft <<"       ";
+            // cout <<"njkd        "    <<coordsNext.first <<"         " <<coordsNext.second <<"        " <<fuelLeft <<"       ";
 
             //  path[curr.second.first.first.first][curr.second.first.first.first] =='P' || 
             
@@ -359,11 +365,26 @@ int main()
                 visitedUtil[coordsNext.first][coordsNext.second]=fuelLeft;
                 heuristicValue=heuristicValueCalculator(path,fuelLeft,fuelCapacity,payToll, payTravel, coordsNext.first, coordsNext.second,rows,columns);
                 // heuristicValue=heuristicValue;
-                // cout <<heuristicValue ;
+
+                if(heuristicValue==INT_MAX)
+                {
+                    cout <<endl;
+                    continue;
+                }
                 tempPath.push_back(coordsNext);
 
-                QUEUE.push(make_pair(heuristicValue, make_pair( make_pair( make_pair(coordsNext.first,coordsNext.second)
-                                 ,fuelLeft) , tempPath )));
+                int costTillNow=costBase+payTravel;
+
+                if(path[coordsNext.first][coordsNext.second]=='T')
+                {
+                    costTillNow=costTillNow+payToll;
+                }
+
+                int aStarCost=costTillNow+ heuristicValue;
+                // cout <<heuristicValue <<"        " <<costBase  <<"        " <<costTillNow  <<"           " <<aStarCost;
+
+                QUEUE.push(make_pair(aStarCost, make_pair( make_pair( make_pair(coordsNext.first,coordsNext.second)
+                                 ,make_pair( fuelLeft , make_pair(heuristicValue, costTillNow ) ) )  , tempPath )));
             
 
                 tempPath.pop_back();
