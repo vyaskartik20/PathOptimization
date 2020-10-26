@@ -96,7 +96,7 @@ vector <pair <int,int> > nextUtilFunction (vector <vector <char> > &path, int ro
 
 int main()
 {
-    cout <<"***********************\n" <<"!! Welcome !!\n"   <<"\n***********************\n";
+    cout <<"***********************\n" <<"!! Welcome !!\n"   <<"\n***********************\n\n";
     
     int rows,columns;
     int fuelCapacity;
@@ -106,84 +106,24 @@ int main()
     int payToll, payTravel;
     int heuristicValue;
     int fuelLeft;
+    bool repeat1=true;
+    bool repeat2=true;
     vector <vector <char> > path;
     vector <vector <int> > visitedUtil;
 
-    cout <<"Would you like to create a new maze [Y] or use the default one [N]?";
-    cin >>c_char;
-
-    if(c_char=='Y')
+    while(repeat1)
     {
-        cout <<"Enter the dimensions of the path [ROW x COLUMN]";
-        cout <<"Enter number of rows\n";
-        cin >>rows;
-        cout <<"Enter number of columns\n";
-        cin >>columns;
+        cout <<"Would you like to create a new maze [Y] or use the default one [N]?";
+        cin >>c_char;
+        repeat1=false;
 
-        path.resize(rows);
-        visitedUtil.resize(rows);
-        for (int i=0; i<rows; i++)
+        if(c_char=='Y')
         {
-            path[i].resize(columns);
-            visitedUtil[i].resize(columns);
-            for(int j=0;j<columns;j++)
-            {
-                path[i][j]='O';
-                visitedUtil[i][j]=0;
-            }
-        }
-
-        cout <<"Enter the fuel capacity of the vehicle\n";
-        cin >> fuelCapacity;
-        cout <<"Enter the cost of one traversal, that is the units of fuel that would burn to "
-            <<"accomplish that one unit of fuel cost one amount of money\n";
-        cin >> payTravel;
-        cout << "Enter the units of amount needed to be paid on one toll tax station\n";
-        cin >> payToll;
-        
-
-        cout <<"Enter the number of petrol pumps in the entire path\n";
-        cin >>numPumps;
-        cout <<"Enter the coordinates of the petrol pumps [X,Y] one by one\n";
-        for(int i=0;i<numPumps;i++)
-        {
-            int x,y;
-            path[x-1][y-1]='P';
-        }
-
-        cout <<"Enter the number of toll tax stops in the entire path\n";
-        cin >>numTolls;
-        cout <<"Enter the coordinates of the toll tax stops [X,Y] one by one\n";
-        for(int i=0;i<numTolls;i++)
-        {
-            int x,y;
-            path[x-1][y-1]='T';
-        }
-
-        cout <<"Enter the number of holes in the entire path\n";
-        cin >>numHoles;
-        cout <<"Enter the coordinates of the holes [X,Y] one by one\n";
-        for(int i=0;i<numHoles;i++)
-        {
-            int x,y;
-            path[x-1][y-1]='H';
-        }
-    }
-    else
-    {
-        cout <<"Choose the default grid : \n" <<"1 to 7 : \n";
-        cin >>c_int;
-
-        if (c_int == 1)
-        {
-            // H T O P
-            //   0 1 2 3
-            // 0 P T P O
-            // 1 O O H T
-            // 2 O O O O
-
-            rows=3;
-            columns=4;
+            cout <<"Enter the dimensions of the path [ROW x COLUMN]";
+            cout <<"Enter number of rows\n";
+            cin >>rows;
+            cout <<"Enter number of columns\n";
+            cin >>columns;
 
             path.resize(rows);
             visitedUtil.resize(rows);
@@ -198,353 +138,433 @@ int main()
                 }
             }
 
-            path[0][0]='P';
-            path[0][2]='P';
+            cout <<"Enter the fuel capacity of the vehicle\n";
+            cin >> fuelCapacity;
+            cout <<"Enter the cost of one traversal, that is the units of fuel that would burn to "
+                <<"accomplish that one unit of fuel cost one amount of money\n";
+            cin >> payTravel;
+            cout << "Enter the units of amount needed to be paid on one toll tax station\n";
+            cin >> payToll;
+            
 
-            path[1][2]='H';
-
-            path[0][1]='T';
-            path[1][3]='T';
-
-            fuelCapacity=5;
-            payToll=10;
-            payTravel=4;
-
-            numHoles=1;
-            numTolls=2;
-            numPumps=2;
-        
-        }
- 
-
-        else if(c_int==2)
-        {
-            // P _ H _ P
-            // _ _ _ _ _
-            // _ T P _ P
-            // P H _ _ _
-            // H _ _ _ _
-
-            rows=5;
-            columns=5;
-
-            path.resize(rows);
-            visitedUtil.resize(rows);
-            for (int i=0; i<rows; i++)
+            cout <<"Enter the number of petrol pumps in the entire path\n";
+            cin >>numPumps;
+            cout <<"Enter the coordinates of the petrol pumps [X,Y] one by one\n";
+            for(int i=0;i<numPumps;i++)
             {
-                path[i].resize(columns);
-                visitedUtil[i].resize(columns);
-                for(int j=0;j<columns;j++)
-                {
-                    path[i][j]='O';
-                    visitedUtil[i][j]=0;
-                }
+                int x,y;
+                path[x-1][y-1]='P';
             }
 
-            path[0][0]='P';
-            path[0][4]='P';
-            path[2][4]='P';
-            path[2][2]='P';
-            path[3][0]='P';
-        
-            path[0][2]='H';
-            path[4][0]='H';
-            path[3][1]='H';
-
-            path[2][1]='T';
-
-            fuelCapacity=3;
-            payToll=10;
-            payTravel=1;
-
-            numHoles=3;
-            numTolls=1;
-            numPumps=5;
-        }
-
-        else if (c_int == 3)
-        {
-            // H T O P
-
-            // P O O O O O
-            // P O O O O O
-            // P O P T P O
-            // P O O O O O
-            // P O O H O O
-            // P O P T O O
-
-            rows=6;
-            columns=6;
-
-            path.resize(rows);
-            visitedUtil.resize(rows);
-            for (int i=0; i<rows; i++)
+            cout <<"Enter the number of toll tax stops in the entire path\n";
+            cin >>numTolls;
+            cout <<"Enter the coordinates of the toll tax stops [X,Y] one by one\n";
+            for(int i=0;i<numTolls;i++)
             {
-                path[i].resize(columns);
-                visitedUtil[i].resize(columns);
-                for(int j=0;j<columns;j++)
-                {
-                    path[i][j]='O';
-                    visitedUtil[i][j]=0;
-                }
+                int x,y;
+                path[x-1][y-1]='T';
             }
 
-            path[0][0]='P';
-            path[1][0]='P';
-            path[2][0]='P';
-            path[3][0]='P';
-            path[4][0]='P';
-            path[5][0]='P';
-            path[2][2]='P';
-            path[1][5]='P';
-            path[2][4]='P';
-
-            path[4][3]='H';
-
-            path[5][3]='T';
-            path[2][3]='T';
-
-            fuelCapacity=4;
-            payToll=10;
-            payTravel=1;
-
-            numHoles=1;
-            numTolls=2;
-            numPumps=9;
-        
-        }
-
-
-        else if (c_int == 4)
-        {
-            // H T O P
-            //   0 1 2 3 4 5 6
-            // 0 P T O O H O O
-            // 1 T T O O O O O
-            // 2 H O P T T P O
-            // 3 P T O T O H T
-            // 4 O O P H O O O
-
-            rows=5;
-            columns=7;
-
-            path.resize(rows);
-            visitedUtil.resize(rows);
-            for (int i=0; i<rows; i++)
+            cout <<"Enter the number of holes in the entire path\n";
+            cin >>numHoles;
+            cout <<"Enter the coordinates of the holes [X,Y] one by one\n";
+            for(int i=0;i<numHoles;i++)
             {
-                path[i].resize(columns);
-                visitedUtil[i].resize(columns);
-                for(int j=0;j<columns;j++)
+                int x,y;
+                path[x-1][y-1]='H';
+            }
+        }
+        else if(c_char=='N')
+        {
+            while(repeat2)
+            {
+                cout <<"Choose the default grid : \n" <<"1 to 7 : \n";
+                cin >>c_int;
+
+                if (c_int == 1)
                 {
-                    path[i][j]='O';
-                    visitedUtil[i][j]=0;
+                    // H T O P
+                    //   0 1 2 3
+                    // 0 P T P O
+                    // 1 O O H T
+                    // 2 O O O O
+
+                    rows=3;
+                    columns=4;
+
+                    path.resize(rows);
+                    visitedUtil.resize(rows);
+                    for (int i=0; i<rows; i++)
+                    {
+                        path[i].resize(columns);
+                        visitedUtil[i].resize(columns);
+                        for(int j=0;j<columns;j++)
+                        {
+                            path[i][j]='O';
+                            visitedUtil[i][j]=0;
+                        }
+                    }
+
+                    path[0][0]='P';
+                    path[0][2]='P';
+
+                    path[1][2]='H';
+
+                    path[0][1]='T';
+                    path[1][3]='T';
+
+                    fuelCapacity=5;
+                    payToll=10;
+                    payTravel=4;
+
+                    numHoles=1;
+                    numTolls=2;
+                    numPumps=2;
+                
+                }
+        
+
+                else if(c_int==2)
+                {
+                    // P _ H _ P
+                    // _ _ _ _ _
+                    // _ T P _ P
+                    // P H _ _ _
+                    // H _ _ _ _
+
+                    rows=5;
+                    columns=5;
+
+                    path.resize(rows);
+                    visitedUtil.resize(rows);
+                    for (int i=0; i<rows; i++)
+                    {
+                        path[i].resize(columns);
+                        visitedUtil[i].resize(columns);
+                        for(int j=0;j<columns;j++)
+                        {
+                            path[i][j]='O';
+                            visitedUtil[i][j]=0;
+                        }
+                    }
+
+                    path[0][0]='P';
+                    path[0][4]='P';
+                    path[2][4]='P';
+                    path[2][2]='P';
+                    path[3][0]='P';
+                
+                    path[0][2]='H';
+                    path[4][0]='H';
+                    path[3][1]='H';
+
+                    path[2][1]='T';
+
+                    fuelCapacity=3;
+                    payToll=10;
+                    payTravel=1;
+
+                    numHoles=3;
+                    numTolls=1;
+                    numPumps=5;
+                }
+
+                else if (c_int == 3)
+                {
+                    // H T O P
+
+                    // P O O O O O
+                    // P O O O O O
+                    // P O P T P O
+                    // P O O O O O
+                    // P O O H O O
+                    // P O P T O O
+
+                    rows=6;
+                    columns=6;
+
+                    path.resize(rows);
+                    visitedUtil.resize(rows);
+                    for (int i=0; i<rows; i++)
+                    {
+                        path[i].resize(columns);
+                        visitedUtil[i].resize(columns);
+                        for(int j=0;j<columns;j++)
+                        {
+                            path[i][j]='O';
+                            visitedUtil[i][j]=0;
+                        }
+                    }
+
+                    path[0][0]='P';
+                    path[1][0]='P';
+                    path[2][0]='P';
+                    path[3][0]='P';
+                    path[4][0]='P';
+                    path[5][0]='P';
+                    path[2][2]='P';
+                    path[1][5]='P';
+                    path[2][4]='P';
+
+                    path[4][3]='H';
+
+                    path[5][3]='T';
+                    path[2][3]='T';
+
+                    fuelCapacity=4;
+                    payToll=10;
+                    payTravel=1;
+
+                    numHoles=1;
+                    numTolls=2;
+                    numPumps=9;
+                
+                }
+
+
+                else if (c_int == 4)
+                {
+                    // H T O P
+                    //   0 1 2 3 4 5 6
+                    // 0 P T O O H O O
+                    // 1 T T O O O O O
+                    // 2 H O P T T P O
+                    // 3 P T O T O H T
+                    // 4 O O P H O O O
+
+                    rows=5;
+                    columns=7;
+
+                    path.resize(rows);
+                    visitedUtil.resize(rows);
+                    for (int i=0; i<rows; i++)
+                    {
+                        path[i].resize(columns);
+                        visitedUtil[i].resize(columns);
+                        for(int j=0;j<columns;j++)
+                        {
+                            path[i][j]='O';
+                            visitedUtil[i][j]=0;
+                        }
+                    }
+
+                    path[0][0]='P';
+                    path[2][2]='P';
+                    path[2][5]='P';
+                    path[3][0]='P';
+                    path[4][2]='P';
+
+                    path[0][4]='H';
+                    path[2][0]='H';
+                    path[3][5]='H';
+                    path[4][3]='H';
+
+                    path[0][1]='T';
+                    path[1][0]='T';
+                    path[1][1]='T';
+                    path[2][3]='T';
+                    path[2][4]='T';
+                    path[3][1]='T';
+                    path[3][3]='T';
+                    path[3][6]='T';
+
+                    fuelCapacity=5;
+                    payToll=10;
+                    payTravel=4;
+
+                    numHoles=4;
+                    numTolls=8;
+                    numPumps=5;
+                
+                }
+
+                else if (c_int == 5)
+                {
+                    // H T O P
+                    //   0 1 2 3 4 5 6
+                    // 0 P T O O H O O
+                    // 1 T T O O O O O
+                    // 2 H O P T T P O
+                    // 3 P T O T O H T
+                    // 4 O O P H O O O
+
+                    rows=5;
+                    columns=7;
+
+                    path.resize(rows);
+                    visitedUtil.resize(rows);
+                    for (int i=0; i<rows; i++)
+                    {
+                        path[i].resize(columns);
+                        visitedUtil[i].resize(columns);
+                        for(int j=0;j<columns;j++)
+                        {
+                            path[i][j]='O';
+                            visitedUtil[i][j]=0;
+                        }
+                    }
+
+                    path[0][0]='P';
+                    path[2][2]='P';
+                    path[2][5]='P';
+                    path[3][0]='P';
+                    path[4][2]='P';
+
+                    path[0][4]='H';
+                    path[2][0]='H';
+                    path[3][5]='H';
+                    path[4][3]='H';
+
+                    path[0][1]='T';
+                    path[1][0]='T';
+                    path[1][1]='T';
+                    path[2][3]='T';
+                    path[2][4]='T';
+                    path[3][1]='T';
+                    path[3][3]='T';
+                    path[3][6]='T';
+
+                    fuelCapacity=5;
+                    payToll=10;
+                    payTravel=15;
+
+                    numHoles=4;
+                    numTolls=8;
+                    numPumps=5;
+                
+                }
+
+                else if (c_int ==6)
+                {
+                    // H T O P
+
+                    // P T O O H O O
+                    // T T O O O O O
+                    // T O P T P O O
+                    // P T O O O O O
+                    // O O P H O O O
+                    // O O O T P O O
+                    // O O P O H P O
+
+                    rows=7;
+                    columns=7;
+
+                    path.resize(rows);
+                    visitedUtil.resize(rows);
+                    for (int i=0; i<rows; i++)
+                    {
+                        path[i].resize(columns);
+                        visitedUtil[i].resize(columns);
+                        for(int j=0;j<columns;j++)
+                        {
+                            path[i][j]='O';
+                            visitedUtil[i][j]=0;
+                        }
+                    }
+
+                    path[0][0]='P';
+                    path[2][2]='P';
+                    path[2][4]='P';
+                    path[3][0]='P';
+                    path[4][2]='P';
+                    path[5][4]='P';
+                    path[6][2]='P';
+                    path[6][5]='P';
+
+                    path[0][4]='H';
+                    path[4][3]='H';
+                    path[6][4]='H';
+
+                    path[0][1]='T';
+                    path[1][0]='T';
+                    path[1][1]='T';
+                    path[2][0]='T';
+                    path[2][3]='T';
+                    path[3][1]='T';
+                    path[5][3]='T';
+
+                    fuelCapacity=3;
+                    payToll=10;
+                    payTravel=1;
+
+                    numHoles=3;
+                    numTolls=7;
+                    numPumps=8;
+                
+                }
+
+                else if (c_int == 7)
+                {
+                    // H T O P
+
+                    // P T O P H O O
+                    // T T O O O O O
+                    // T O P T P O O
+                    // P T O O O O O
+                    // O O P H O O O
+                    // O O O T P O O
+                    // O O P O H P O
+
+                    rows=7;
+                    columns=7;
+
+                    path.resize(rows);
+                    visitedUtil.resize(rows);
+                    for (int i=0; i<rows; i++)
+                    {
+                        path[i].resize(columns);
+                        visitedUtil[i].resize(columns);
+                        for(int j=0;j<columns;j++)
+                        {
+                            path[i][j]='O';
+                            visitedUtil[i][j]=0;
+                        }
+                    }
+
+                    path[0][0]='P';
+                    path[0][3]='P';
+                    path[2][2]='P';
+                    path[2][4]='P';
+                    path[3][0]='P';
+                    path[4][2]='P';
+                    path[5][4]='P';
+                    path[6][2]='P';
+                    path[6][5]='P';
+
+                    path[0][4]='H';
+                    path[4][3]='H';
+                    path[6][4]='H';
+
+                    path[0][1]='T';
+                    path[1][0]='T';
+                    path[1][1]='T';
+                    path[2][0]='T';
+                    path[2][3]='T';
+                    path[3][1]='T';
+                    path[5][3]='T';
+
+                    fuelCapacity=3;
+                    payToll=10;
+                    payTravel=1;
+
+                    numHoles=3;
+                    numTolls=7;
+                    numPumps=9;
+                
+                }
+                else
+                {
+                    repeat2=true;
+                    cout <<"Enter a valid input\n";
                 }
             }
-
-            path[0][0]='P';
-            path[2][2]='P';
-            path[2][5]='P';
-            path[3][0]='P';
-            path[4][2]='P';
-
-            path[0][4]='H';
-            path[2][0]='H';
-            path[3][5]='H';
-            path[4][3]='H';
-
-            path[0][1]='T';
-            path[1][0]='T';
-            path[1][1]='T';
-            path[2][3]='T';
-            path[2][4]='T';
-            path[3][1]='T';
-            path[3][3]='T';
-            path[3][6]='T';
-
-            fuelCapacity=5;
-            payToll=10;
-            payTravel=4;
-
-            numHoles=4;
-            numTolls=8;
-            numPumps=5;
-        
         }
-
-        else if (c_int == 5)
+        else
         {
-            // H T O P
-            //   0 1 2 3 4 5 6
-            // 0 P T O O H O O
-            // 1 T T O O O O O
-            // 2 H O P T T P O
-            // 3 P T O T O H T
-            // 4 O O P H O O O
-
-            rows=5;
-            columns=7;
-
-            path.resize(rows);
-            visitedUtil.resize(rows);
-            for (int i=0; i<rows; i++)
-            {
-                path[i].resize(columns);
-                visitedUtil[i].resize(columns);
-                for(int j=0;j<columns;j++)
-                {
-                    path[i][j]='O';
-                    visitedUtil[i][j]=0;
-                }
-            }
-
-            path[0][0]='P';
-            path[2][2]='P';
-            path[2][5]='P';
-            path[3][0]='P';
-            path[4][2]='P';
-
-            path[0][4]='H';
-            path[2][0]='H';
-            path[3][5]='H';
-            path[4][3]='H';
-
-            path[0][1]='T';
-            path[1][0]='T';
-            path[1][1]='T';
-            path[2][3]='T';
-            path[2][4]='T';
-            path[3][1]='T';
-            path[3][3]='T';
-            path[3][6]='T';
-
-            fuelCapacity=5;
-            payToll=10;
-            payTravel=15;
-
-            numHoles=4;
-            numTolls=8;
-            numPumps=5;
-        
+            repeat1=true;
+            cout <<"Enter a valid input\n";
         }
-
-        else if (c_int ==6)
-        {
-            // H T O P
-
-            // P T O O H O O
-            // T T O O O O O
-            // T O P T P O O
-            // P T O O O O O
-            // O O P H O O O
-            // O O O T P O O
-            // O O P O H P O
-
-            rows=7;
-            columns=7;
-
-            path.resize(rows);
-            visitedUtil.resize(rows);
-            for (int i=0; i<rows; i++)
-            {
-                path[i].resize(columns);
-                visitedUtil[i].resize(columns);
-                for(int j=0;j<columns;j++)
-                {
-                    path[i][j]='O';
-                    visitedUtil[i][j]=0;
-                }
-            }
-
-            path[0][0]='P';
-            path[2][2]='P';
-            path[2][4]='P';
-            path[3][0]='P';
-            path[4][2]='P';
-            path[5][4]='P';
-            path[6][2]='P';
-            path[6][5]='P';
-
-            path[0][4]='H';
-            path[4][3]='H';
-            path[6][4]='H';
-
-            path[0][1]='T';
-            path[1][0]='T';
-            path[1][1]='T';
-            path[2][0]='T';
-            path[2][3]='T';
-            path[3][1]='T';
-            path[5][3]='T';
-
-            fuelCapacity=3;
-            payToll=10;
-            payTravel=1;
-
-            numHoles=3;
-            numTolls=7;
-            numPumps=8;
         
-        }
-
-        else if (c_int == 7)
-        {
-            // H T O P
-
-            // P T O P H O O
-            // T T O O O O O
-            // T O P T P O O
-            // P T O O O O O
-            // O O P H O O O
-            // O O O T P O O
-            // O O P O H P O
-
-            rows=7;
-            columns=7;
-
-            path.resize(rows);
-            visitedUtil.resize(rows);
-            for (int i=0; i<rows; i++)
-            {
-                path[i].resize(columns);
-                visitedUtil[i].resize(columns);
-                for(int j=0;j<columns;j++)
-                {
-                    path[i][j]='O';
-                    visitedUtil[i][j]=0;
-                }
-            }
-
-            path[0][0]='P';
-            path[0][3]='P';
-            path[2][2]='P';
-            path[2][4]='P';
-            path[3][0]='P';
-            path[4][2]='P';
-            path[5][4]='P';
-            path[6][2]='P';
-            path[6][5]='P';
-
-            path[0][4]='H';
-            path[4][3]='H';
-            path[6][4]='H';
-
-            path[0][1]='T';
-            path[1][0]='T';
-            path[1][1]='T';
-            path[2][0]='T';
-            path[2][3]='T';
-            path[3][1]='T';
-            path[5][3]='T';
-
-            fuelCapacity=3;
-            payToll=10;
-            payTravel=1;
-
-            numHoles=3;
-            numTolls=7;
-            numPumps=9;
-        
-        }
     }
 
 
